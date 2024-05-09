@@ -5,8 +5,6 @@ import { Web3OnboardProvider as OnboardProvider, init } from "@web3-onboard/reac
 // represents an injected web3 wallet like Metamask
 import injectedModule from "@web3-onboard/injected-wallets"
 
-const INFURA_KEY = process.env.INFURA_KEY
-
 // setting up an Ethereum chain called "Sepolia". We are defining an object with the properties id, token, label and rpcUrl + This object is
 // then added to the chain list
 const ethereumSepolia = {
@@ -16,7 +14,26 @@ const ethereumSepolia = {
   rpcUrl: "https://rpc.sepolia.org/",
 }
 
-const chains = [ethereumSepolia]
+const polygonMainnet = {
+  id: "0x89",
+  token: "MATIC",
+  label: "Polygon",
+  rpcUrl: "https://matic-mainnet.chainstacklabs.com",
+}
+const baseMainnet = {
+  id: "0x2105",
+  token: "ETH",
+  label: "Base",
+  rpcUrl: "https://mainnet.base.org",
+}
+const celoMainnet = {
+  id: "0xa4ec",
+  token: "ETH",
+  label: "Celo",
+  rpcUrl: "https://1rpc.io/celo",
+}
+
+const chains = [ethereumSepolia, polygonMainnet, baseMainnet, celoMainnet]
 
 // configuring the list of wallets that Web3Onboard will support (MetaMask)
 const wallets = [injectedModule()]
@@ -36,8 +53,8 @@ interface Props {
   children: React.ReactNode
 }
 
-const Web3OnboardProvider: React.FC<Props> = ({ children }) => {
+const Web3Onboard: React.FC<Props> = ({ children }) => {
   return <OnboardProvider web3Onboard={web3Onboard}>{children}</OnboardProvider>
 }
 
-export default Web3OnboardProvider
+export default Web3Onboard

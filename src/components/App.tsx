@@ -1,3 +1,6 @@
+import Head from "next/head"
+import styles from "./App.module.css"
+
 // integration of Web3 into React, including Onboard initialization and hooks to connect and disconnect the wallet.
 import { init, useConnectWallet } from "@web3-onboard/react"
 
@@ -6,6 +9,19 @@ import injectedModule from "@web3-onboard/injected-wallets"
 
 // library use to interact with the Ethereum blockchain. It provides a variety of functionalities, including creating and manipulating smart contracts, sending transactions, interacting with the blockchain
 import { ethers } from "ethers"
+
+const buttonStyles = {
+  borderRadius: "6px",
+  background: "#111827",
+  border: "none",
+  fontSize: "18px",
+  fontWeight: "600",
+  cursor: "pointer",
+  color: "white",
+  padding: "14px 12px",
+  marginTop: "40px",
+  fontFamily: "inherit",
+}
 
 // Get  free API key at https://explorer.blocknative.com/?signup=true
 
@@ -59,10 +75,21 @@ function App() {
   }
 
   return (
-    <div>
-      <button disabled={connecting} onClick={() => (wallet ? disconnect(wallet) : connect())}>
-        {connecting ? "Connecting" : wallet ? "Disconnect" : "Connect"}
-      </button>
+    <div className={styles.container}>
+      <Head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+      </Head>
+
+      <main className={styles.main}>
+        <h1 className={styles.title}>Welcome to my first demo of connect wallets!</h1>
+
+        <button style={buttonStyles} disabled={connecting} onClick={() => (wallet ? disconnect(wallet) : connect())}>
+          {connecting ? "Connecting" : wallet ? "Disconnect" : "Connect"}
+        </button>
+      </main>
+      <footer className={styles.footer}>
+        <div></div>
+      </footer>
     </div>
   )
 }
