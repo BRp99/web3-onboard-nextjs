@@ -62,6 +62,10 @@ init({
 })
 
 function App() {
+  const getCurrentYear = (): string => {
+    return new Date().getFullYear().toString()
+  }
+
   // use the use Connect Wallet hook to manage the wallet connection state
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet()
 
@@ -87,8 +91,9 @@ function App() {
           {connecting ? "Connecting" : wallet ? "Disconnect" : "Connect"}
         </button>
       </main>
+
       <footer className={styles.footer}>
-        <div></div>
+        <div> &copy; Connectify {getCurrentYear()}. All rights reserved </div>
       </footer>
     </div>
   )
