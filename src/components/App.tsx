@@ -1,5 +1,6 @@
 import Head from "next/head"
 import styles from "./App.module.css"
+import { useState } from "react"
 
 // integration of Web3 into React, including Onboard initialization and hooks to connect and disconnect the wallet.
 import { init, useConnectWallet } from "@web3-onboard/react"
@@ -66,6 +67,8 @@ function App() {
     return new Date().getFullYear().toString()
   }
 
+  const [connectedAddress, setConnectedAddress] = useState<string | null>(null)
+
   // use the use Connect Wallet hook to manage the wallet connection state
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet()
 
@@ -87,9 +90,26 @@ function App() {
       <main className={styles.main}>
         <h1 className={styles.title}>Welcome to my first demo of connect wallets!</h1>
 
-        <button style={buttonStyles} disabled={connecting} onClick={() => (wallet ? disconnect(wallet) : connect())}>
+        <button
+          style={buttonStyles}
+          disabled={connecting}
+          onClick={async () => {
+            if (wallet) {
+              disconnect(wallet)
+              setConnectedAddress(null)
+            } else {
+              const wallets = await connect()
+              if (wallets.length > 0) {
+                const address = wallets[0].accounts[0].address
+                setConnectedAddress(address)
+              }
+            }
+          }}
+        >
           {connecting ? "Connecting" : wallet ? "Disconnect" : "Connect"}
         </button>
+
+        {connectedAddress && <p>Connected Address: {connectedAddress}</p>}
       </main>
 
       <footer className={styles.footer}>
