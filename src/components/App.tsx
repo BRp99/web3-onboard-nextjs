@@ -1,6 +1,6 @@
 import Head from "next/head"
 import styles from "./App.module.css"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 // integration of Web3 into React, including Onboard initialization and hooks to connect and disconnect the wallet.
 import { init, useConnectWallet } from "@web3-onboard/react"
@@ -9,7 +9,7 @@ import { init, useConnectWallet } from "@web3-onboard/react"
 import injectedModule from "@web3-onboard/injected-wallets"
 
 // library use to interact with the Ethereum blockchain. It provides a variety of functionalities, including creating and manipulating smart contracts, sending transactions, interacting with the blockchain
-import { ethers } from "ethers"
+import { ethers, BrowserProvider } from "ethers"
 
 const buttonStyles = {
   borderRadius: "6px",
@@ -68,18 +68,35 @@ function App() {
   }
 
   const [connectedAddress, setConnectedAddress] = useState<string | null>(null)
+  const [balance, setBalance] = useState<string | null>(null)
 
   // use the use Connect Wallet hook to manage the wallet connection state
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet()
 
   // create an ethers provider
-  let ethersProvider
+  let ethersProvider: BrowserProvider | undefined
 
   if (wallet) {
     // if using ethers v6 this is:
     ethersProvider = new ethers.BrowserProvider(wallet.provider, "any")
     // ethersProvider = new ethers.providers.Web3Provider(wallet.provider, "any")
   }
+
+  // Função para buscar o saldo da conta conectada
+  const fetchBalance = async (address: string) => {
+    if (ethersProvider) {
+      const balanceBigNumber = await ethersProvider.getBalance(address)
+      const balanceInEth = ethers.formatEther(balanceBigNumber)
+      setBalance(balanceInEth)
+    }
+  }
+
+  // Efeito para buscar o saldo quando o endereço conectado mudar
+  useEffect(() => {
+    if (connectedAddress) {
+      fetchBalance(connectedAddress)
+    }
+  }, [connectedAddress])
 
   return (
     <div className={styles.container}>
@@ -97,6 +114,7 @@ function App() {
             if (wallet) {
               disconnect(wallet)
               setConnectedAddress(null)
+              setBalance(null)
             } else {
               const wallets = await connect()
               if (wallets.length > 0) {
@@ -109,7 +127,12 @@ function App() {
           {connecting ? "Connecting" : wallet ? "Disconnect" : "Connect"}
         </button>
 
-        {connectedAddress && <p>Connected Address: {connectedAddress}</p>}
+        {connectedAddress && (
+          <div>
+            <p>Connected Address: {connectedAddress}</p>
+            {balance !== null && <p>Balance: {balance} ETH</p>}
+          </div>
+        )}
       </main>
 
       <footer className={styles.footer}>
@@ -118,6 +141,6 @@ function App() {
     </div>
   )
 }
-// This code configures Onboard for use with an injected wallet (such as MetaMask) and a connection to the Ethereum network using Infura
+// This code configures Onboard for use with an injected wallet and a connection to the Ethereum network using Infura
 
 export default App
